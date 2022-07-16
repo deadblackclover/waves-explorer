@@ -3,7 +3,7 @@ module Main exposing (main)
 import Browser
 import Html exposing (..)
 import Http
-import Info exposing (getCurrentHeight, getVersion)
+import Info exposing (Info, getCurrentHeight, getVersion, infoInit, infoView)
 
 
 
@@ -24,16 +24,13 @@ main =
 
 
 type alias Model =
-    { version : String
-    , currentHeight : Int
+    { info : Info
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { version = ""
-      , currentHeight = 0
-      }
+    ( { info = infoInit }
     , Cmd.batch [ getVersion GotVersion, getCurrentHeight GotCurrentHeight ]
     )
 
@@ -53,7 +50,7 @@ update msg model =
         GotVersion result ->
             case result of
                 Ok version ->
-                    ( { model | version = version }, Cmd.none )
+                    ( { model | info = { version = version, currentHeight = model.info.currentHeight } }, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -61,7 +58,7 @@ update msg model =
         GotCurrentHeight result ->
             case result of
                 Ok height ->
-                    ( { model | currentHeight = height }, Cmd.none )
+                    ( { model | info = { version = model.info.version, currentHeight = height } }, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -75,13 +72,6 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Test"
     , body =
-        [ div []
-            [ text "Version:"
-            , text model.version
-            ]
-        , div []
-            [ text "Current height:"
-            , text (String.fromInt model.currentHeight)
-            ]
+        [ infoView model.info
         ]
     }
