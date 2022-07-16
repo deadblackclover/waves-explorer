@@ -53,4 +53,13 @@ blockView block =
 blocksView : List Block -> Html msg
 blocksView blocks =
     div [ class "blocks" ]
-        (List.map blockView blocks)
+        [ div []
+            [ div [ class "blocks__title" ]
+                [ p [] [ text "Blocks" ] ]
+            , div [ class "blocks__head" ]
+                [ p [] [ text "№ / Timestamp" ]
+                , p [] [ text "Block ID / Generator" ]
+                ]
+            ]
+        , div [] (List.map blockView blocks)
+        ]

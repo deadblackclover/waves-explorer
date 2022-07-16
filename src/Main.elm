@@ -102,7 +102,12 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Test"
     , body =
-        [ infoView model.info
-        , blocksView model.blocks
+        [ header []
+            [ img [] []
+            ]
+        , main_ []
+            [ infoView model.info
+            , blocksView model.blocks
+            ]
         ]
     }
