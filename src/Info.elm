@@ -24,12 +24,12 @@ getVersion msg =
         url =
             "https://nodes.wavesnodes.com/node/version"
 
-        decodeContent =
+        decoder =
             at [ "version" ] string
     in
     Http.get
         { url = url
-        , expect = Http.expectJson msg decodeContent
+        , expect = Http.expectJson msg decoder
         }
 
 
@@ -39,12 +39,12 @@ getCurrentHeight msg =
         url =
             "https://nodes.wavesnodes.com/blocks/height"
 
-        decodeContent =
+        decoder =
             at [ "height" ] int
     in
     Http.get
         { url = url
-        , expect = Http.expectJson msg decodeContent
+        , expect = Http.expectJson msg decoder
         }
 
 
