@@ -38,12 +38,12 @@ getBlocks from to msg =
 
 blockView : Block -> Html msg
 blockView block =
-    div []
-        [ div []
+    div [ class "block" ]
+        [ div [ class "block__height" ]
             [ a [ href "#" ] [ text (String.fromInt block.height) ]
             , p [] [ text (String.fromInt block.timestamp) ]
             ]
-        , div []
+        , div [ class "block__id" ]
             [ p [] [ text block.id ]
             , a [ href "#" ] [ text block.generator ]
             ]
@@ -52,5 +52,5 @@ blockView block =
 
 blocksView : List Block -> Html msg
 blocksView blocks =
-    div []
+    div [ class "blocks" ]
         (List.map blockView blocks)

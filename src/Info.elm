@@ -1,6 +1,7 @@
 module Info exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Http
 import Json.Decode exposing (at, int, string)
 
@@ -50,12 +51,12 @@ getCurrentHeight msg =
 
 infoView : Info -> Html msg
 infoView info =
-    div []
-        [ div []
+    div [ class "info" ]
+        [ div [ class "info__version" ]
             [ p [] [ text "Version:" ]
             , p [] [ text info.version ]
             ]
-        , div []
+        , div [ class "info__height" ]
             [ p [] [ text "Current height:" ]
             , p [] [ text (String.fromInt info.currentHeight) ]
             ]
