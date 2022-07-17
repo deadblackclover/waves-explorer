@@ -1,10 +1,11 @@
 module Main exposing (main)
 
-import Blocks exposing (Block, blocksView, getBlocks)
+import Block exposing (Block, getBlock, initBlock, viewBlock)
+import Blocks exposing (getBlocks, viewBlocks)
 import Browser
 import Html exposing (..)
 import Http
-import Info exposing (Info, getCurrentHeight, getVersion, infoInit, infoView)
+import Info exposing (Info, getCurrentHeight, getVersion, initInfo, viewInfo)
 
 
 
@@ -24,16 +25,25 @@ main =
 -- MODEL
 
 
+type Route
+    = BlocksPage
+    | BlockPage
+
+
 type alias Model =
     { info : Info
+    , route : Route
     , blocks : List Block
+    , block : Block
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { info = infoInit
+    ( { info = initInfo
+      , route = BlocksPage
       , blocks = []
+      , block = initBlock
       }
     , Cmd.batch
         [ getVersion GotVersion
@@ -50,6 +60,8 @@ type Msg
     = GotVersion (Result Http.Error String)
     | GotCurrentHeight (Result Http.Error Int)
     | GotBlocks (Result Http.Error (List Block))
+    | GotBlock (Result Http.Error Block)
+    | GetBlock Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -88,10 +100,21 @@ update msg model =
         GotBlocks result ->
             case result of
                 Ok blocks ->
-                    ( { model | blocks = blocks }, Cmd.none )
+                    ( { model | route = BlocksPage, blocks = blocks }, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
+
+        GotBlock result ->
+            case result of
+                Ok block ->
+                    ( { model | route = BlockPage, block = block }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
+        GetBlock height ->
+            ( model, getBlock height GotBlock )
 
 
 
@@ -100,14 +123,19 @@ update msg model =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Test"
+    { title = "Waves Explorer"
     , body =
         [ header []
             [ img [] []
             ]
         , main_ []
-            [ infoView model.info
-            , blocksView model.blocks
+            [ viewInfo model.info
+            , case model.route of
+                BlocksPage ->
+                    viewBlocks GetBlock model.blocks
+
+                BlockPage ->
+                    viewBlock model.block
             ]
         ]
     }

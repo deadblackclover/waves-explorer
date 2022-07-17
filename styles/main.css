@@ -38,7 +38,8 @@ main {
     color: #9ba6b2;
 }
 
-.blocks__title {
+.blocks__title,
+.block__title {
     padding: 0px 24px;
     font-size: 30px;
 }
@@ -53,7 +54,7 @@ main {
     color: #9ba6b2;
 }
 
-.block {
+.blocks__item {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -62,18 +63,41 @@ main {
     border-bottom: 1px dashed #e9e9eb;
 }
 
-.block__id {
+.blocks__item > .item__id {
     text-align: end;
 }
 
-.block__height > p,
-.block__id > p {
+.blocks__item > .item__height > p,
+.blocks__item > .item__id > p {
     margin: 10px 0px;
     color: #9ba6b2;
 }
 
-.block__height > a,
-.block__id > a {
+.blocks__item > .item__height > a,
+.blocks__item > .item__id > a {
     display: block;
     margin: 10px 0px;
+}
+
+.block__items > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.block__items > div > p:first-child {
+    min-width: 100px;
+    margin: 5px 0px;
+    margin-right: 10px;
+    padding: 10px 24px;
+    background-color: #f8f9fb;
+    color: #9ba6b2;
+}
+
+.block__items > div > p:last-child,
+.block__items > div > a:last-child {
+    max-width: max-content;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }

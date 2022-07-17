@@ -1,17 +1,11 @@
 module Blocks exposing (..)
 
+import Block exposing (Block, blockDecoder)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Http
-import Json.Decode as JD exposing (field, int, string)
-
-
-type alias Block =
-    { height : Int
-    , timestamp : Int
-    , id : String
-    , generator : String
-    }
+import Json.Decode as JD
 
 
 getBlocks : Int -> Int -> (Result Http.Error (List Block) -> msg) -> Cmd msg
@@ -19,13 +13,6 @@ getBlocks from to msg =
     let
         url =
             "https://nodes.wavesnodes.com/blocks/seq/" ++ String.fromInt from ++ "/" ++ String.fromInt to
-
-        blockDecoder =
-            JD.map4 Block
-                (field "height" int)
-                (field "timestamp" int)
-                (field "id" string)
-                (field "generator" string)
 
         blockListDecoder =
             JD.list blockDecoder
@@ -36,22 +23,22 @@ getBlocks from to msg =
         }
 
 
-blockView : Block -> Html msg
-blockView block =
-    div [ class "block" ]
-        [ div [ class "block__height" ]
-            [ a [ href "#" ] [ text (String.fromInt block.height) ]
+item : (Int -> msg) -> Block -> Html msg
+item msg block =
+    div [ class "blocks__item" ]
+        [ div [ class "item__height" ]
+            [ a [ href "#", onClick (msg block.height) ] [ text (String.fromInt block.height) ]
             , p [] [ text (String.fromInt block.timestamp) ]
             ]
-        , div [ class "block__id" ]
+        , div [ class "item__id" ]
             [ p [] [ text block.id ]
             , a [ href "#" ] [ text block.generator ]
             ]
         ]
 
 
-blocksView : List Block -> Html msg
-blocksView blocks =
+viewBlocks : (Int -> msg) -> List Block -> Html msg
+viewBlocks msg blocks =
     div [ class "blocks" ]
         [ div []
             [ div [ class "blocks__title" ]
@@ -61,5 +48,5 @@ blocksView blocks =
                 , p [] [ text "Block ID / Generator" ]
                 ]
             ]
-        , div [] (List.map blockView blocks)
+        , div [] (List.map (item msg) blocks)
         ]

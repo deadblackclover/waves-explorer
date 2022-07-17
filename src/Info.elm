@@ -12,8 +12,8 @@ type alias Info =
     }
 
 
-infoInit : Info
-infoInit =
+initInfo : Info
+initInfo =
     { version = ""
     , currentHeight = 0
     }
@@ -49,8 +49,8 @@ getCurrentHeight msg =
         }
 
 
-infoView : Info -> Html msg
-infoView info =
+viewInfo : Info -> Html msg
+viewInfo info =
     div [ class "info" ]
         [ div [ class "info__version" ]
             [ p [] [ text "Version:" ]
