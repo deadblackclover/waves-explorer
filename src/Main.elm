@@ -4,6 +4,8 @@ import Block exposing (Block, getBlock, initBlock, viewBlock)
 import Blocks exposing (getBlocks, viewBlocks)
 import Browser
 import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Http
 import Info exposing (Info, getCurrentHeight, getVersion, initInfo, viewInfo)
 
@@ -61,6 +63,7 @@ type Msg
     | GotCurrentHeight (Result Http.Error Int)
     | GotBlocks (Result Http.Error (List Block))
     | GotBlock (Result Http.Error Block)
+    | GetBlocks
     | GetBlock Int
 
 
@@ -100,7 +103,7 @@ update msg model =
         GotBlocks result ->
             case result of
                 Ok blocks ->
-                    ( { model | route = BlocksPage, blocks = blocks }, Cmd.none )
+                    ( { model | route = BlocksPage, blocks = List.reverse blocks }, Cmd.none )
 
                 Err _ ->
                     ( model, Cmd.none )
@@ -112,6 +115,16 @@ update msg model =
 
                 Err _ ->
                     ( model, Cmd.none )
+
+        GetBlocks ->
+            let
+                from =
+                    model.info.currentHeight - 10
+
+                to =
+                    model.info.currentHeight
+            in
+            ( model, getBlocks from to GotBlocks )
 
         GetBlock height ->
             ( model, getBlock height GotBlock )
@@ -126,7 +139,14 @@ view model =
     { title = "Waves Explorer"
     , body =
         [ header []
-            [ img [] []
+            [ div []
+                [ img [ src "/img/waves-elm.png", onClick GetBlocks ] []
+                , h1 [] [ text "Waves Explorer" ]
+                ]
+            , div []
+                [ a [ href "https://github.com/waves-elm/waves-explorer", target "_blank" ]
+                    [ img [ src "/img/github.svg" ] [] ]
+                ]
             ]
         , main_ []
             [ viewInfo model.info
