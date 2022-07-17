@@ -1,6 +1,7 @@
 module Blocks exposing (..)
 
 import Block exposing (Block, blockDecoder)
+import Helpers exposing (timestampToTime)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -28,7 +29,7 @@ item msg block =
     div [ class "blocks__item" ]
         [ div [ class "item__height" ]
             [ a [ href "#", onClick (msg block.height) ] [ text (String.fromInt block.height) ]
-            , p [] [ text (String.fromInt block.timestamp) ]
+            , p [] [ text (timestampToTime block.timestamp) ]
             ]
         , div [ class "item__id" ]
             [ p [] [ text block.id ]

@@ -1,5 +1,6 @@
 module Block exposing (..)
 
+import Helpers exposing (timestampToTime)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Http
@@ -73,7 +74,7 @@ viewBlock block =
                 ]
             , div []
                 [ p [] [ text "Timestamp" ]
-                , p [] [ text (String.fromInt block.timestamp) ]
+                , p [] [ text (timestampToTime block.timestamp) ]
                 ]
             , div []
                 [ p [] [ text "Parent block" ]
