@@ -57,7 +57,8 @@ main {
 }
 
 .blocks__title,
-.block__title {
+.block__title,
+.address__title {
     padding: 0px 24px;
     font-size: 30px;
 }
@@ -97,6 +98,21 @@ main {
     margin: 10px 0px;
 }
 
+.block__title,
+.address__title {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.block__title > p:last-child,
+.address__title > p:last-child {
+    margin-left: 10px;
+    font-size: 26px;
+    color: #9ba6b2;
+}
+
 .block__items > div {
     display: flex;
     flex-direction: row;
@@ -118,4 +134,17 @@ main {
     max-width: max-content;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.balance__items {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px;
+    background-color: #f8f9fb;
+}
+
+.balance__items > div > p:first-child {
+    color: #9ba6b2;
 }

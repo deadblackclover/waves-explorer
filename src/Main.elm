@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import Balance exposing (Balance, getBalance, initBalance, viewBalance)
 import Block exposing (Block, getBlock, initBlock, viewBlock)
 import Blocks exposing (getBlocks, viewBlocks)
 import Browser
@@ -30,6 +31,7 @@ main =
 type Route
     = BlocksPage
     | BlockPage
+    | BalancePage
 
 
 type alias Model =
@@ -37,6 +39,8 @@ type alias Model =
     , route : Route
     , blocks : List Block
     , block : Block
+    , address : String
+    , balance : Balance
     }
 
 
@@ -46,6 +50,8 @@ init _ =
       , route = BlocksPage
       , blocks = []
       , block = initBlock
+      , address = ""
+      , balance = initBalance
       }
     , Cmd.batch
         [ getVersion GotVersion
@@ -63,8 +69,10 @@ type Msg
     | GotCurrentHeight (Result Http.Error Int)
     | GotBlocks (Result Http.Error (List Block))
     | GotBlock (Result Http.Error Block)
+    | GotBalance (Result Http.Error Balance)
     | GetBlocks
     | GetBlock Int
+    | GetBalance String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -116,6 +124,14 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
+        GotBalance result ->
+            case result of
+                Ok balance ->
+                    ( { model | route = BalancePage, balance = balance }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
         GetBlocks ->
             let
                 from =
@@ -128,6 +144,9 @@ update msg model =
 
         GetBlock height ->
             ( model, getBlock height GotBlock )
+
+        GetBalance address ->
+            ( { model | address = address }, getBalance address GotBalance )
 
 
 
@@ -152,10 +171,13 @@ view model =
             [ viewInfo model.info
             , case model.route of
                 BlocksPage ->
-                    viewBlocks GetBlock model.blocks
+                    viewBlocks GetBlock GetBalance model.blocks
 
                 BlockPage ->
-                    viewBlock model.block
+                    viewBlock GetBalance model.block
+
+                BalancePage ->
+                    viewBalance model.address model.balance
             ]
         ]
     }

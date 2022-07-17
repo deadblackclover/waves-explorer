@@ -3,6 +3,7 @@ module Block exposing (..)
 import Helpers exposing (timestampToTime)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Http
 import Json.Decode as JD exposing (Decoder, field, int, string)
 
@@ -54,11 +55,13 @@ getBlock height msg =
         }
 
 
-viewBlock : Block -> Html msg
-viewBlock block =
+viewBlock : (String -> msg) -> Block -> Html msg
+viewBlock getBalance block =
     div [ class "block" ]
         [ div [ class "block__title" ]
-            [ p [] [ text "Block" ] ]
+            [ p [] [ text "Block" ]
+            , p [] [ text ("/ " ++ String.fromInt block.height) ]
+            ]
         , div [ class "block__items" ]
             [ div []
                 [ p [] [ text "Height" ]
@@ -82,7 +85,7 @@ viewBlock block =
                 ]
             , div []
                 [ p [] [ text "Generator" ]
-                , a [ href "#" ] [ text block.generator ]
+                , a [ href "#", onClick (getBalance block.generator) ] [ text block.generator ]
                 ]
             , div []
                 [ p [] [ text "Signature" ]

@@ -24,22 +24,22 @@ getBlocks from to msg =
         }
 
 
-item : (Int -> msg) -> Block -> Html msg
-item msg block =
+item : (Int -> msg) -> (String -> msg) -> Block -> Html msg
+item getBlock getBalance block =
     div [ class "blocks__item" ]
         [ div [ class "item__height" ]
-            [ a [ href "#", onClick (msg block.height) ] [ text (String.fromInt block.height) ]
+            [ a [ href "#", onClick (getBlock block.height) ] [ text (String.fromInt block.height) ]
             , p [] [ text (timestampToTime block.timestamp) ]
             ]
         , div [ class "item__id" ]
             [ p [] [ text block.id ]
-            , a [ href "#" ] [ text block.generator ]
+            , a [ href "#", onClick (getBalance block.generator) ] [ text block.generator ]
             ]
         ]
 
 
-viewBlocks : (Int -> msg) -> List Block -> Html msg
-viewBlocks msg blocks =
+viewBlocks : (Int -> msg) -> (String -> msg) -> List Block -> Html msg
+viewBlocks getBlock getBalance blocks =
     div [ class "blocks" ]
         [ div []
             [ div [ class "blocks__title" ]
@@ -49,5 +49,5 @@ viewBlocks msg blocks =
                 , p [] [ text "Block ID / Generator" ]
                 ]
             ]
-        , div [] (List.map (item msg) blocks)
+        , div [] (List.map (item getBlock getBalance) blocks)
         ]
