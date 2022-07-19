@@ -26,12 +26,12 @@ getBlocks from to msg =
 
 item : (Int -> msg) -> (String -> msg) -> Block -> Html msg
 item getBlock getBalance block =
-    div [ class "blocks__item" ]
-        [ div [ class "item__height" ]
+    div [ class "list__item" ]
+        [ div []
             [ a [ href "#", onClick (getBlock block.height) ] [ text (String.fromInt block.height) ]
             , p [] [ text (timestampToTime block.timestamp) ]
             ]
-        , div [ class "item__id" ]
+        , div []
             [ p [] [ text block.id ]
             , a [ href "#", onClick (getBalance block.generator) ] [ text block.generator ]
             ]

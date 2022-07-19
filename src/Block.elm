@@ -6,6 +6,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as JD exposing (Decoder, field, int, string)
+import Transaction exposing (Transaction, transactionDecoder)
+import Transactions exposing (viewTransactions)
 
 
 type alias Block =
@@ -16,6 +18,7 @@ type alias Block =
     , parentBlock : String
     , generator : String
     , signature : String
+    , transactions : List Transaction
     }
 
 
@@ -28,12 +31,13 @@ initBlock =
     , parentBlock = ""
     , generator = ""
     , signature = ""
+    , transactions = []
     }
 
 
 blockDecoder : Decoder Block
 blockDecoder =
-    JD.map7 Block
+    JD.map8 Block
         (field "height" int)
         (field "id" string)
         (field "version" int)
@@ -41,6 +45,7 @@ blockDecoder =
         (field "reference" string)
         (field "generator" string)
         (field "signature" string)
+        (field "transactions" (JD.list transactionDecoder))
 
 
 getBlock : Int -> (Result Http.Error Block -> msg) -> Cmd msg
@@ -80,6 +85,10 @@ viewBlock getBalance block =
                 , p [] [ text (timestampToTime block.timestamp) ]
                 ]
             , div []
+                [ p [] [ text "Transactions" ]
+                , p [] [ text (String.fromInt (List.length block.transactions)) ]
+                ]
+            , div []
                 [ p [] [ text "Parent block" ]
                 , p [] [ text block.parentBlock ]
                 ]
@@ -92,4 +101,6 @@ viewBlock getBalance block =
                 , p [] [ text block.signature ]
                 ]
             ]
+        , div []
+            [ viewTransactions getBalance block.transactions ]
         ]
