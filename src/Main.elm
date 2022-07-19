@@ -37,6 +37,7 @@ type Route
 type alias Model =
     { info : Info
     , route : Route
+    , height : Int
     , blocks : List Block
     , block : Block
     , address : String
@@ -48,6 +49,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( { info = initInfo
       , route = BlocksPage
+      , height = 0
       , blocks = []
       , block = initBlock
       , address = ""
@@ -70,6 +72,8 @@ type Msg
     | GotBlocks (Result Http.Error (List Block))
     | GotBlock (Result Http.Error Block)
     | GotBalance (Result Http.Error Balance)
+    | NextBlocks
+    | BackBlocks
     | GetBlocks
     | GetBlock Int
     | GetBalance String
@@ -101,6 +105,7 @@ update msg model =
                             { version = model.info.version
                             , currentHeight = height
                             }
+                        , height = height - 10
                       }
                     , getBlocks (height - 10) height GotBlocks
                     )
@@ -132,6 +137,26 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
+        NextBlocks ->
+            let
+                from =
+                    model.height - 10
+
+                to =
+                    model.height
+            in
+            ( { model | height = from }, getBlocks from to GotBlocks )
+
+        BackBlocks ->
+            let
+                from =
+                    model.height
+
+                to =
+                    model.height + 10
+            in
+            ( { model | height = to }, getBlocks from to GotBlocks )
+
         GetBlocks ->
             let
                 from =
@@ -140,7 +165,7 @@ update msg model =
                 to =
                     model.info.currentHeight
             in
-            ( model, getBlocks from to GotBlocks )
+            ( { model | height = from }, getBlocks from to GotBlocks )
 
         GetBlock height ->
             ( model, getBlock height GotBlock )
@@ -171,7 +196,7 @@ view model =
             [ viewInfo model.info
             , case model.route of
                 BlocksPage ->
-                    viewBlocks GetBlock GetBalance model.blocks
+                    viewBlocks BackBlocks NextBlocks GetBlock GetBalance model.blocks
 
                 BlockPage ->
                     viewBlock GetBalance model.block

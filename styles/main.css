@@ -56,11 +56,25 @@ main {
     color: #9ba6b2;
 }
 
-.blocks__title,
+.blocks__title > p,
 .block__title,
 .address__title {
     padding: 0px 24px;
     font-size: 30px;
+}
+
+.blocks__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.blocks__title > div {
+    padding: 0px 24px;
+}
+
+.blocks__title > div > a:first-child {
+    margin-right: 10px;
 }
 
 .blocks__head {

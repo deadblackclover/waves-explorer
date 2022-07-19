@@ -38,12 +38,17 @@ item getBlock getBalance block =
         ]
 
 
-viewBlocks : (Int -> msg) -> (String -> msg) -> List Block -> Html msg
-viewBlocks getBlock getBalance blocks =
+viewBlocks : msg -> msg -> (Int -> msg) -> (String -> msg) -> List Block -> Html msg
+viewBlocks back next getBlock getBalance blocks =
     div [ class "blocks" ]
         [ div []
             [ div [ class "blocks__title" ]
-                [ p [] [ text "Blocks" ] ]
+                [ p [] [ text "Blocks" ]
+                , div []
+                    [ a [ href "#", onClick back ] [ text "< Back" ]
+                    , a [ href "#", onClick next ] [ text "Next >" ]
+                    ]
+                ]
             , div [ class "blocks__head" ]
                 [ p [] [ text "№ / Timestamp" ]
                 , p [] [ text "Block ID / Generator" ]
