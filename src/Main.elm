@@ -178,7 +178,12 @@ update msg model =
                 to =
                     model.info.currentHeight
             in
-            ( { model | height = from }, getBlocks from to GotBlocks )
+            ( { model | height = from }
+            , Cmd.batch
+                [ getBlocks from to GotBlocks
+                , getCurrentHeight GotCurrentHeight
+                ]
+            )
 
         GetBlock height ->
             ( model, getBlock height GotBlock )
