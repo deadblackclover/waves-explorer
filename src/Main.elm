@@ -9,6 +9,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Info exposing (Info, getCurrentHeight, getVersion, initInfo, viewInfo)
+import Transaction exposing (Transaction)
+import Transactions exposing (emptyTransactions, getTransactions, viewTransactions)
 
 
 
@@ -42,6 +44,7 @@ type alias Model =
     , block : Block
     , address : String
     , balance : Balance
+    , transactions : List (List Transaction)
     }
 
 
@@ -54,6 +57,7 @@ init _ =
       , block = initBlock
       , address = ""
       , balance = initBalance
+      , transactions = []
       }
     , Cmd.batch
         [ getVersion GotVersion
@@ -72,6 +76,7 @@ type Msg
     | GotBlocks (Result Http.Error (List Block))
     | GotBlock (Result Http.Error Block)
     | GotBalance (Result Http.Error Balance)
+    | GotTransactions (Result Http.Error (List (List Transaction)))
     | NextBlocks
     | BackBlocks
     | GetBlocks
@@ -137,6 +142,14 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
+        GotTransactions result ->
+            case result of
+                Ok transactions ->
+                    ( { model | transactions = transactions }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
         NextBlocks ->
             let
                 from =
@@ -171,7 +184,12 @@ update msg model =
             ( model, getBlock height GotBlock )
 
         GetBalance address ->
-            ( { model | address = address }, getBalance address GotBalance )
+            ( { model | address = address }
+            , Cmd.batch
+                [ getBalance address GotBalance
+                , getTransactions address GotTransactions
+                ]
+            )
 
 
 
@@ -202,7 +220,15 @@ view model =
                     viewBlock GetBalance model.block
 
                 BalancePage ->
-                    viewBalance model.address model.balance
+                    div []
+                        [ viewBalance model.address model.balance
+                        , case List.head model.transactions of
+                            Just transactions ->
+                                viewTransactions GetBalance transactions
+
+                            Nothing ->
+                                emptyTransactions
+                        ]
             ]
         ]
     }
