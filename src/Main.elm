@@ -9,8 +9,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Info exposing (Info, getCurrentHeight, getVersion, initInfo, viewInfo)
-import Transaction exposing (Transaction)
-import Transactions exposing (emptyTransactions, getTransactions, viewTransactions)
+import Transaction as TX exposing (getTransaction, initTransaction, viewTransaction)
+import Transactions as TXS exposing (emptyTransactions, getTransactions, viewTransactions)
 
 
 
@@ -34,6 +34,7 @@ type Route
     = BlocksPage
     | BlockPage
     | BalancePage
+    | TransactionPage
 
 
 type alias Model =
@@ -44,7 +45,8 @@ type alias Model =
     , block : Block
     , address : String
     , balance : Balance
-    , transactions : List (List Transaction)
+    , transactions : List (List TXS.Transaction)
+    , transaction : TX.Transaction
     }
 
 
@@ -58,6 +60,7 @@ init _ =
       , address = ""
       , balance = initBalance
       , transactions = []
+      , transaction = initTransaction
       }
     , Cmd.batch
         [ getVersion GotVersion
@@ -76,12 +79,14 @@ type Msg
     | GotBlocks (Result Http.Error (List Block))
     | GotBlock (Result Http.Error Block)
     | GotBalance (Result Http.Error Balance)
-    | GotTransactions (Result Http.Error (List (List Transaction)))
+    | GotTransactions (Result Http.Error (List (List TXS.Transaction)))
+    | GotTransaction (Result Http.Error TX.Transaction)
     | NextBlocks
     | BackBlocks
     | GetBlocks
     | GetBlock Int
     | GetBalance String
+    | GetTransaction String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -150,6 +155,14 @@ update msg model =
                 Err _ ->
                     ( model, Cmd.none )
 
+        GotTransaction result ->
+            case result of
+                Ok transaction ->
+                    ( { model | route = TransactionPage, transaction = transaction }, Cmd.none )
+
+                Err _ ->
+                    ( model, Cmd.none )
+
         NextBlocks ->
             let
                 from =
@@ -196,6 +209,9 @@ update msg model =
                 ]
             )
 
+        GetTransaction id ->
+            ( model, getTransaction id GotTransaction )
+
 
 
 -- VIEW
@@ -222,18 +238,21 @@ view model =
                     viewBlocks BackBlocks NextBlocks GetBlock GetBalance model.blocks
 
                 BlockPage ->
-                    viewBlock GetBalance model.block
+                    viewBlock GetTransaction GetBalance model.block
 
                 BalancePage ->
                     div []
                         [ viewBalance model.address model.balance
                         , case List.head model.transactions of
                             Just transactions ->
-                                viewTransactions GetBalance transactions
+                                viewTransactions GetTransaction GetBalance transactions
 
                             Nothing ->
                                 emptyTransactions
                         ]
+
+                TransactionPage ->
+                    viewTransaction GetBlock GetBalance model.transaction
             ]
         ]
     }

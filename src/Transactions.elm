@@ -5,8 +5,24 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
-import Json.Decode as JD
-import Transaction exposing (Transaction, transactionDecoder)
+import Json.Decode as JD exposing (Decoder, field, int, string)
+
+
+type alias Transaction =
+    { id : String
+    , type_ : Int
+    , timestamp : Int
+    , sender : String
+    }
+
+
+transactionDecoder : Decoder Transaction
+transactionDecoder =
+    JD.map4 Transaction
+        (field "id" string)
+        (field "type" int)
+        (field "timestamp" int)
+        (field "sender" string)
 
 
 getTransactions : String -> (Result Http.Error (List (List Transaction)) -> msg) -> Cmd msg
@@ -36,11 +52,11 @@ titleTransactions =
         ]
 
 
-item : (String -> msg) -> Transaction -> Html msg
-item getBalance transaction =
+item : (String -> msg) -> (String -> msg) -> Transaction -> Html msg
+item getTransaction getBalance transaction =
     div [ class "list__item" ]
         [ div []
-            [ a [ href "#" ] [ text transaction.id ]
+            [ a [ href "#", onClick (getTransaction transaction.id) ] [ text transaction.id ]
             , p [] [ text (timestampToTime transaction.timestamp) ]
             ]
         , div []
@@ -48,11 +64,11 @@ item getBalance transaction =
         ]
 
 
-viewTransactions : (String -> msg) -> List Transaction -> Html msg
-viewTransactions getBalance transactions =
+viewTransactions : (String -> msg) -> (String -> msg) -> List Transaction -> Html msg
+viewTransactions getTransaction getBalance transactions =
     div [ class "transactions" ]
         [ titleTransactions
-        , div [] (List.map (item getBalance) transactions)
+        , div [] (List.map (item getTransaction getBalance) transactions)
         ]
 
 

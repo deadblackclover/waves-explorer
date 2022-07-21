@@ -56,10 +56,15 @@ main {
     color: #9ba6b2;
 }
 
-.blocks__title > p,
-.transactions__title,
 .block__title,
-.address__title {
+.address__title,
+.transaction__title,
+.transactions__title {
+    padding: 0px 24px;
+    font-size: 30px;
+}
+
+.blocks__title > p {
     padding: 0px 24px;
     font-size: 30px;
 }
@@ -115,7 +120,8 @@ main {
 }
 
 .block__title,
-.address__title {
+.address__title,
+.transaction__title {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -123,20 +129,23 @@ main {
 }
 
 .block__title > p:last-child,
-.address__title > p:last-child {
+.address__title > p:last-child,
+.transaction__title > p:last-child {
     margin-left: 10px;
     font-size: 26px;
     color: #9ba6b2;
 }
 
-.block__items > div {
+.block__items > div,
+.transaction__items > div {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
 }
 
-.block__items > div > p:first-child {
+.block__items > div > p:first-child,
+.transaction__items > div > p:first-child {
     min-width: 100px;
     margin: 5px 0px;
     margin-right: 10px;
@@ -146,7 +155,9 @@ main {
 }
 
 .block__items > div > p:last-child,
-.block__items > div > a:last-child {
+.block__items > div > a:last-child,
+.transaction__items > div > p:last-child,
+.transaction__items > div > a:last-child {
     max-width: max-content;
     text-overflow: ellipsis;
     overflow: hidden;

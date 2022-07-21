@@ -6,8 +6,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as JD exposing (Decoder, field, int, string)
-import Transaction exposing (Transaction, transactionDecoder)
-import Transactions exposing (viewTransactions)
+import Transactions exposing (Transaction, transactionDecoder, viewTransactions)
 
 
 type alias Block =
@@ -60,8 +59,8 @@ getBlock height msg =
         }
 
 
-viewBlock : (String -> msg) -> Block -> Html msg
-viewBlock getBalance block =
+viewBlock : (String -> msg) -> (String -> msg) -> Block -> Html msg
+viewBlock getTransaction getBalance block =
     div [ class "block" ]
         [ div [ class "block__title" ]
             [ p [] [ text "Block" ]
@@ -102,5 +101,5 @@ viewBlock getBalance block =
                 ]
             ]
         , div []
-            [ viewTransactions getBalance block.transactions ]
+            [ viewTransactions getTransaction getBalance block.transactions ]
         ]
